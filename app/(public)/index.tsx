@@ -2,8 +2,6 @@ import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useOAuth } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
 
 export default function Index() {
   const { startOAuthFlow } = useOAuth({
@@ -12,8 +10,6 @@ export default function Index() {
   const { startOAuthFlow: startGoogleOAuthFlow } = useOAuth({
     strategy: "oauth_google",
   });
-  const data = useQuery(api.users.getAllUsers);
-  console.log("Index -> data", data);
 
   const handleFacebookLogin = async () => {
     try {

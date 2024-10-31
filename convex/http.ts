@@ -6,7 +6,6 @@ const http = httpRouter();
 
 export const handleClerkWebhook = httpAction(async (ctx, request) => {
   const { data, type } = await request.json();
-  console.log("doSomething -> data", data);
 
   switch (type) {
     case "user.created":
