@@ -1,6 +1,8 @@
+import { useAuth } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
-import { View } from "react-native";
+import { router, Tabs } from "expo-router";
+import { TouchableOpacity, View } from "react-native";
+import * as Haptics from "expo-haptics";
 
 const CreateTabIcon = ({
   color,
@@ -23,6 +25,7 @@ const CreateTabIcon = ({
 };
 
 const Layout = () => {
+  const { signOut } = useAuth();
   return (
     <Tabs
       screenOptions={{
@@ -64,6 +67,13 @@ const Layout = () => {
           title: "Create",
           tabBarIcon: CreateTabIcon,
         }}
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+            // Haptics.selectionAsync();
+            router.push("/(auth)/modal/create");
+          },
+        }}
       />
       <Tabs.Screen
         name="favorites"
@@ -88,6 +98,11 @@ const Layout = () => {
               size={size}
               color={color}
             />
+          ),
+          headerRight: () => (
+            <TouchableOpacity onPress={() => signOut} className="pr-4">
+              <Ionicons name="log-out" size={24} color="#000" />
+            </TouchableOpacity>
           ),
         }}
       />

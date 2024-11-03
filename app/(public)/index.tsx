@@ -2,6 +2,7 @@ import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useOAuth } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
+import { router } from "expo-router";
 
 export default function Index() {
   const { startOAuthFlow } = useOAuth({
@@ -80,7 +81,12 @@ export default function Index() {
             <Ionicons name="chevron-forward" size={24} color="#acacac" />
           </TouchableOpacity>
 
-          <TouchableOpacity className="bg-white p-4 rounded-md border-border border-[0.4px]">
+          <TouchableOpacity
+            className="bg-white p-4 rounded-md border-border border-[0.4px]"
+            onPress={() => {
+              router.push("/(auth)/(tabs)/create");
+            }}
+          >
             <View className="flex-row items-center gap-4">
               <Text className="font-DMSansBold flex-1">
                 Continue without a profile
