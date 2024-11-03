@@ -51,7 +51,7 @@ export default function Index() {
         </Text>
         <View className="gap-4 mt-4">
           <TouchableOpacity
-            onPress={handleFacebookLogin}
+            onPress={() => handleFacebookLogin()}
             className="bg-white p-4 rounded-md border-border border-[0.4px]"
           >
             <View className="flex-row items-center gap-4">
@@ -74,7 +74,7 @@ export default function Index() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={handleGoogleLogin}
+            onPress={() => handleGoogleLogin()}
             className="flex-row items-center gap-4 bg-white p-4 rounded-md border-border border-[0.4px]"
           >
             <Text className="font-DMSansBold flex-1">Continue with Google</Text>

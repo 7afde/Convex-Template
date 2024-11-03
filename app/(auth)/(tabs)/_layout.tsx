@@ -100,7 +100,7 @@ const Layout = () => {
             />
           ),
           headerRight: () => (
-            <TouchableOpacity onPress={() => signOut} className="pr-4">
+            <TouchableOpacity onPress={() => signOut()} className="pr-4">
               <Ionicons name="log-out" size={24} color="#000" />
             </TouchableOpacity>
           ),

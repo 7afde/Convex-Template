@@ -1,4 +1,4 @@
-import { Slot } from "expo-router";
+import { router, Slot, useSegments } from "expo-router";
 import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@/utils/cache";
 import { LogBox } from "react-native";
@@ -34,11 +34,26 @@ const InitialLayout = () => {
     DMSans_500Medium,
     DMSans_700Bold,
   });
+  const { isLoaded, isSignedIn } = useAuth();
+  const segments = useSegments();
+
   useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    const inAuthGroup = segments[0] === "(auth)";
+
+    if (isSignedIn && !inAuthGroup) {
+      router.push("/(auth)/(tabs)/feed");
+    } else if (!isSignedIn && inAuthGroup) {
+      router.push("/(public)");
+    }
+  }, [isSignedIn]);
 
   return <Slot />;
 };
