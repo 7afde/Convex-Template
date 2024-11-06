@@ -1,12 +1,12 @@
 import { v } from "convex/values";
 import { internalMutation, query } from "./_generated/server";
 
-export const getAllUsers = query({
-  args: {},
-  handler: async (ctx) => {
-    return await ctx.db.query("users").collect();
-  },
-});
+// export const getAllUsers = query({
+//   args: {},
+//   handler: async (ctx) => {
+//     return await ctx.db.query("users").collect();
+//   },
+// });
 
 export const createUser = internalMutation({
   args: {
@@ -26,5 +26,17 @@ export const createUser = internalMutation({
       username: args.username || `${args.first_name}${args.last_name}`,
     });
     return userId;
+  },
+});
+
+export const getUserByClerkId = query({
+  args: {
+    clerkId: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("users")
+      .filter((user) => user.eq("clerkId", args.clerkId))
+      .unique();
   },
 });
