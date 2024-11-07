@@ -3,6 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, Tabs } from "expo-router";
 import { TouchableOpacity, View } from "react-native";
 import * as Haptics from "expo-haptics";
+import { Colors } from "@/constants/Colors";
 
 const CreateTabIcon = ({
   color,
@@ -14,7 +15,13 @@ const CreateTabIcon = ({
   focused: boolean;
 }) => {
   return (
-    <View className="bg-itemBackground p-[6] rounded-[8]">
+    <View
+      style={{
+        backgroundColor: Colors.itemBackground,
+        padding: 6,
+        borderRadius: 8,
+      }}
+    >
       <Ionicons
         name={focused ? "add" : "add-outline"}
         size={size}
@@ -92,17 +99,13 @@ const Layout = () => {
         name="profile"
         options={{
           title: "Profile",
+          headerShown: false,
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? "person" : "person-outline"}
               size={size}
               color={color}
             />
-          ),
-          headerRight: () => (
-            <TouchableOpacity onPress={() => signOut()} className="pr-4">
-              <Ionicons name="log-out" size={24} color="#000" />
-            </TouchableOpacity>
           ),
         }}
       />

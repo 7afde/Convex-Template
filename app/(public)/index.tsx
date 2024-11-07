@@ -1,113 +1,190 @@
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { useOAuth } from "@clerk/clerk-expo";
+import { Colors } from "@/constants/Colors";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { StatusBar } from "expo-status-bar";
-import { router } from "expo-router";
+import { useOAuth } from "@clerk/clerk-expo";
+import { UserFeedback } from "@sentry/react-native";
+import * as Sentry from "@sentry/react-native";
 
-export default function Index() {
-  const { startOAuthFlow } = useOAuth({
-    strategy: "oauth_facebook",
-  });
-  const { startOAuthFlow: startGoogleOAuthFlow } = useOAuth({
-    strategy: "oauth_google",
-  });
+const LoginScreen = () => {
+  const { startOAuthFlow } = useOAuth({ strategy: "oauth_facebook" });
+  const { startOAuthFlow: googleAuth } = useOAuth({ strategy: "oauth_google" });
 
   const handleFacebookLogin = async () => {
     try {
       const { createdSessionId, setActive } = await startOAuthFlow();
-      console.log("handleFacebookLogin -> createdSessionId", createdSessionId);
 
       if (createdSessionId) {
         setActive!({ session: createdSessionId });
       }
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error("OAuth error", err);
     }
   };
 
   const handleGoogleLogin = async () => {
     try {
-      const { createdSessionId, setActive } = await startGoogleOAuthFlow();
-      console.log("handleGoogleLogin -> createdSessionId", createdSessionId);
+      const { createdSessionId, setActive } = await googleAuth();
 
       if (createdSessionId) {
         setActive!({ session: createdSessionId });
       }
+    } catch (err) {
+      console.error("OAuth error", err);
+    }
+  };
+
+  const triggerError = () => {
+    try {
+      throw new Error("This is a test error");
     } catch (error) {
-      console.error(error);
+      const sentryId = Sentry.captureMessage("Houston, we have a problem");
+
+      const userFeedback: UserFeedback = {
+        event_id: sentryId,
+        name: "Simon Grimm",
+        email: "simon@galaxies.dev",
+        comments: "Enrich the error message with more information",
+      };
+
+      Sentry.captureUserFeedback(userFeedback);
     }
   };
 
   return (
-    <View className="flex-1 gap-10 items-center bg-background">
+    <View style={styles.container}>
       <Image
         source={require("@/assets/images/login.png")}
-        className="w-full h-[360] "
-        resizeMode="cover"
+        style={styles.loginImage}
       />
-      <ScrollView className="flex-1 mx-6">
-        <Text className="font-DMSansBold text-xl text-center">
-          How would you like to use Threads?
-        </Text>
-        <View className="gap-4 mt-4">
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.title}>How would you like to use Threads?</Text>
+
+        <View style={styles.buttonContainer}>
           <TouchableOpacity
-            onPress={() => handleFacebookLogin()}
-            className="bg-white p-4 rounded-md border-border border-[0.4px]"
+            style={styles.loginButton}
+            onPress={handleFacebookLogin}
           >
-            <View className="flex-row items-center gap-4">
+            <View style={styles.loginButtonContent}>
               <Image
                 source={require("@/assets/images/instagram_icon.webp")}
-                resizeMode="contain"
-                className="w-12 h-12"
+                style={styles.loginButtonImage}
               />
-
-              <Text className="font-DMSansBold flex-1">
+              <Text style={styles.loginButtonText}>
                 Continue with Instagram
               </Text>
-              <Ionicons name="chevron-forward" size={24} color="#acacac" />
+              <Ionicons
+                name="chevron-forward"
+                size={24}
+                color={Colors.border}
+              />
             </View>
-            <Text className="font-DMSansRegular text-sm mt-2 text-border">
-              Log in or create a Threads profile with your Instagram account.
+            <Text style={styles.loginButtonSubtitle}>
+              Log in or create a THreads profile with your Instagram account.
               With a profile, you can post, interact and get personalised
               recommendations.
             </Text>
           </TouchableOpacity>
 
+          {/* For tetstingh with a different account */}
           <TouchableOpacity
-            onPress={() => handleGoogleLogin()}
-            className="flex-row items-center gap-4 bg-white p-4 rounded-md border-border border-[0.4px]"
+            style={styles.loginButton}
+            onPress={handleGoogleLogin}
           >
-            <Text className="font-DMSansBold flex-1">Continue with Google</Text>
-            <Ionicons name="chevron-forward" size={24} color="#acacac" />
+            <View style={styles.loginButtonContent}>
+              <Text style={styles.loginButtonText}>Continue with Google</Text>
+              <Ionicons
+                name="chevron-forward"
+                size={24}
+                color={Colors.border}
+              />
+            </View>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            className="bg-white p-4 rounded-md border-border border-[0.4px]"
-            onPress={() => {
-              router.push("/(auth)/(tabs)/create");
-            }}
-          >
-            <View className="flex-row items-center gap-4">
-              <Text className="font-DMSansBold flex-1">
-                Continue without a profile
-              </Text>
-              <Ionicons name="chevron-forward" size={24} color="#acacac" />
+          <TouchableOpacity style={styles.loginButton}>
+            <View style={styles.loginButtonContent}>
+              <Text style={styles.loginButtonText}>Use without a profile</Text>
+              <Ionicons
+                name="chevron-forward"
+                size={24}
+                color={Colors.border}
+              />
             </View>
-            <Text className="font-DMSansRegular text-sm mt-2 text-border">
-              Skip the profile creation and start using Threads right away. You
-              can always create a profile later.
+            <Text style={styles.loginButtonSubtitle}>
+              You can browse Threads without a profile, but won't be able to
+              post, interact or get personalised recommendations.
             </Text>
           </TouchableOpacity>
+
+          <TouchableOpacity onPress={triggerError}>
+            <Text style={styles.switchAccountButtonText}>Switch accounts</Text>
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity className="mt-2">
-          <Text className="font-DMSansBold text-center text-border text-lg">
-            Switch accounts
-          </Text>
-        </TouchableOpacity>
       </ScrollView>
-
-      <StatusBar style="light" />
     </View>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    gap: 20,
+    backgroundColor: Colors.background,
+  },
+  loginImage: {
+    width: "100%",
+    height: 350,
+    resizeMode: "cover",
+  },
+  title: {
+    fontSize: 17,
+    fontFamily: "DMSans_500Medium",
+  },
+  buttonContainer: {
+    gap: 20,
+    marginHorizontal: 20,
+  },
+  loginButton: {
+    backgroundColor: "#fff",
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Colors.border,
+  },
+  loginButtonText: {
+    color: "#000",
+    fontSize: 15,
+    fontFamily: "DMSans_500Medium",
+    flex: 1,
+  },
+  loginButtonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  loginButtonImage: {
+    width: 50,
+    height: 50,
+  },
+  loginButtonSubtitle: {
+    fontSize: 12,
+    fontFamily: "DMSans_400Regular",
+    color: "#acacac",
+    marginTop: 5,
+  },
+  switchAccountButtonText: {
+    fontSize: 14,
+    color: Colors.border,
+    alignSelf: "center",
+  },
+});
+
+export default LoginScreen;

@@ -20,7 +20,13 @@ const Page = () => {
     }
   };
   return (
-    <View className="flex-1 items-center justify-center">
+    <View
+      style={{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <Button onPress={testError} title="Error" />
     </View>
   );
