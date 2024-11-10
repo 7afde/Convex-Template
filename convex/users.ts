@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { internalMutation, query } from "./_generated/server";
+import { Id } from "./_generated/dataModel";
 
 // export const getAllUsers = query({
 //   args: {},
@@ -36,7 +37,16 @@ export const getUserByClerkId = query({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("users")
-      .filter((user) => user.eq("clerkId", args.clerkId))
+      .filter((q) => q.eq(q.field("clerkId"), args.clerkId))
       .unique();
+  },
+});
+
+export const getUserById = query({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.userId);
   },
 });
