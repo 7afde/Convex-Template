@@ -47,9 +47,18 @@ const UserProfile = ({ userId }: UserProfileProps) => {
               }&imageUrl=${profile?.imageUrl ? encodeURIComponent(profile?.imageUrl) : ""}`}
               asChild
             > */}
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Edit profile</Text>
-            </TouchableOpacity>
+            <Link
+              href={`/(auth)/modal/editProfile?biostring=${
+                profile?.bio ? encodeURIComponent(profile?.bio) : ""
+              }&linkstring=${profile?.websiteUrl ? encodeURIComponent(profile?.websiteUrl) : ""}&userId=${
+                profile?._id
+              }&imageUrl=${profile?.imageUrl ? encodeURIComponent(profile?.imageUrl) : ""}`}
+              asChild
+            >
+              <TouchableOpacity style={styles.button}>
+                <Text style={styles.buttonText}>Edit profile</Text>
+              </TouchableOpacity>
+            </Link>
             {/* </Link> */}
             <TouchableOpacity style={styles.button}>
               <Text style={styles.buttonText}>Share profile</Text>
