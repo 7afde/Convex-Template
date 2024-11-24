@@ -1,4 +1,9 @@
-import { router, Slot, useSegments } from "expo-router";
+import {
+  router,
+  Slot,
+  useNavigationContainerRef,
+  useSegments,
+} from "expo-router";
 import {
   ClerkProvider,
   ClerkLoaded,
@@ -18,7 +23,6 @@ import * as SplashScreen from "expo-splash-screen";
 import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import * as Sentry from "@sentry/react-native";
-
 
 const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
   unsavedChangesWarning: false,
@@ -102,6 +106,12 @@ const InitialLayout = () => {
 };
 
 const RootLayout = () => {
+  const ref = useNavigationContainerRef();
+
+  useEffect(() => {
+    routingInstrumentation.registerNavigationContainer(ref);
+  }, [ref]);
+
   return (
     <ClerkProvider publishableKey={publishableKey!} tokenCache={tokenCache}>
       <ClerkLoaded>
@@ -113,4 +123,4 @@ const RootLayout = () => {
   );
 };
 
-export default RootLayout;
+export default Sentry.wrap(RootLayout);

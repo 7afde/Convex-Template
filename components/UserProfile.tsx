@@ -32,7 +32,7 @@ const UserProfile = ({ userId }: UserProfileProps) => {
         <Image source={{ uri: profile?.imageUrl }} style={styles.image} />
       </View>
       <Text style={styles.bio}>{profile?.bio || "No bio"}</Text>
-      <Text>
+      <Text style={styles.followers}>
         {profile?.followersCount} followers ·{" "}
         {profile?.websiteUrl || "No website"}
       </Text>
@@ -104,6 +104,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 16,
     marginBottom: 16,
+  },
+  followers: {
+    fontSize: 11,
+    fontWeight: "bold",
   },
   buttonRow: {
     flexDirection: "row",
