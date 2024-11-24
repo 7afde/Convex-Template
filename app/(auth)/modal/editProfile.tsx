@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
 
 const editProfile = () => {
   const { biostring, linkstring, userId, imageUrl } = useLocalSearchParams<{
@@ -22,8 +23,12 @@ const editProfile = () => {
   }>();
   const [bio, setBio] = useState(biostring);
   const [link, setLink] = useState(linkstring);
-  const [image, setImage] = useState(imageUrl);
   const updateUser = useMutation(api.users.updateUser);
+  const generateUploadUrl = useMutation(api.users.generateUploadUrl);
+  const updateImage = useMutation(api.users.updateImage);
+
+  const [selectedImage, setSelectedImage] =
+    useState<ImagePicker.ImagePickerAsset | null>(null);
 
   const onDone = async () => {
     await updateUser({
@@ -31,8 +36,42 @@ const editProfile = () => {
       bio: bio,
       websiteUrl: link,
     });
+    if (selectedImage) {
+      await updateProfilePicture();
+    }
 
     router.dismiss();
+  };
+
+  const updateProfilePicture = async () => {
+    // Step 1: Get a short-lived upload URL
+    const postUrl = await generateUploadUrl();
+
+    // Convert URI to blob
+    const response = await fetch(selectedImage!.uri);
+    const blob = await response.blob();
+
+    // Step 2: POST the file to the URL
+    const result = await fetch(postUrl, {
+      method: "POST",
+      headers: { "Content-Type": selectedImage!.mimeType! },
+      body: blob,
+    });
+    const { storageId } = await result.json();
+    console.log("🚀 ~ updateProfilePicture ~ storageId:", storageId);
+    // Step 3: Save the newly allocated storage id to the database
+    await updateImage({ storageId, _id: userId as Id<"users"> });
+  };
+
+  const selectImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+    });
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0]);
+    }
   };
 
   return (
@@ -46,7 +85,14 @@ const editProfile = () => {
           ),
         }}
       />
-      <Image source={{ uri: imageUrl }} style={styles.image} />
+      <TouchableOpacity onPress={selectImage}>
+        {selectedImage ? (
+          <Image source={{ uri: selectedImage.uri }} style={styles.image} />
+        ) : (
+          <Image source={{ uri: imageUrl }} style={styles.image} />
+        )}
+        <Text style={styles.updateImage}>Update image</Text>
+      </TouchableOpacity>
       <View style={styles.section}>
         <Text style={styles.label}>Bio</Text>
         <TextInput
@@ -87,6 +133,11 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: 8,
     margin: 16,
+  },
+  updateImage: {
+    color: Colors.submit,
+    alignSelf: "center",
+    marginTop: 8,
   },
   bioInput: {
     height: 100,
