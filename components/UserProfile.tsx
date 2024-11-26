@@ -5,6 +5,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { Colors } from "@/constants/Colors";
 import { Link } from "expo-router";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 type UserProfileProps = {
   userId?: string;
@@ -29,7 +30,11 @@ const UserProfile = ({ userId }: UserProfileProps) => {
           </Text>
           <Text style={styles.username}>@{profile?.username}</Text>
         </View>
-        <Image source={{ uri: profile?.imageUrl }} style={styles.image} />
+        {profile?.imageUrl ? (
+          <Image source={{ uri: profile.imageUrl }} style={styles.image} />
+        ) : (
+          <FontAwesome name="user-circle" size={50} color="black" />
+        )}
       </View>
       <Text style={styles.bio}>{profile?.bio || "No bio"}</Text>
       <Text style={styles.followers}>

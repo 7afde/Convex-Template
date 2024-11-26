@@ -13,6 +13,7 @@ import {
   Image,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import { FontAwesome } from "@expo/vector-icons";
 
 const editProfile = () => {
   const { biostring, linkstring, userId, imageUrl } = useLocalSearchParams<{
@@ -86,10 +87,14 @@ const editProfile = () => {
         }}
       />
       <TouchableOpacity onPress={selectImage}>
-        {selectedImage ? (
-          <Image source={{ uri: selectedImage.uri }} style={styles.image} />
+        {!selectedImage ? (
+          !imageUrl ? (
+            <FontAwesome name="user-circle" size={50} color="black" />
+          ) : (
+            <Image source={{ uri: imageUrl }} style={styles.image} />
+          )
         ) : (
-          <Image source={{ uri: imageUrl }} style={styles.image} />
+          <Image source={{ uri: selectedImage.uri }} style={styles.image} />
         )}
         <Text style={styles.updateImage}>Update image</Text>
       </TouchableOpacity>
